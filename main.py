@@ -1,7 +1,6 @@
 from fastapi import FastAPI, HTTPException, status
 from pydantic import BaseModel
 import sqlite3
-from typing import Optional, List
 
 app = FastAPI()
 DATABASE = "banco.db"
@@ -42,7 +41,7 @@ def iniciar_banco():
 def home():
     return {"message": "API de Usuários"}
 
-@app.post("/usuario/", response_model=Usuario, status_code=status.HTTP_201_CREATED)
+@app.post("/usuario", response_model=Usuario, status_code=status.HTTP_201_CREATED)
 def criar_usuario(usuario: UsuarioCreate):
     conn = get_banco()
     cursor = conn.cursor()
@@ -55,7 +54,7 @@ def criar_usuario(usuario: UsuarioCreate):
     conn.close()
     return {"id": usuario_id, **usuario.model_dump()}
 
-@app.get("/usuario/")
+@app.get("/usuario")
 def listar():
     conn = get_banco()
     cursor = conn.cursor()
@@ -117,4 +116,10 @@ def delete_user(usuario_id: int):
 if __name__ == "__main__":
     import uvicorn
     iniciar_banco()
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(
+        "seu_arquivo:app",
+        host="0.0.0.0",
+        port=8000,
+        reload=True,
+        workers=4
+    )
